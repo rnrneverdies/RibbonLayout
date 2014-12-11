@@ -107,7 +107,7 @@ public class MainActivity extends ActionBarActivity
 
         return super.onOptionsItemSelected(item);
     }
-
+    
     /**
      * A placeholder fragment containing a simple view.
      */
@@ -142,6 +142,22 @@ public class MainActivity extends ActionBarActivity
                 @Override
                 public void onClick(View v) {
                     Toast.makeText(getActivity(), "Text Ok", Toast.LENGTH_SHORT).show();
+                }
+            });
+
+            Button btn2 = (Button) rootView.findViewById(R.id.testButton2);
+            btn2.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Toast.makeText(getActivity(), "Make it rain!", Toast.LENGTH_SHORT).show();
+                }
+            });
+
+            Button btn3 = (Button) rootView.findViewById(R.id.testButton3);
+            btn3.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Toast.makeText(getActivity(), "Hello World!", Toast.LENGTH_SHORT).show();
                 }
             });
             return rootView;

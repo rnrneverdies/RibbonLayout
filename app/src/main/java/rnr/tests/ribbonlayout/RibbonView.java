@@ -1,15 +1,16 @@
 package rnr.tests.ribbonlayout;
 
+import android.annotation.TargetApi;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.Matrix;
+import android.graphics.Outline;
 import android.graphics.Paint;
 import android.graphics.Path;
-import android.graphics.RectF;
+import android.os.Build;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.View;
+import android.view.ViewOutlineProvider;
 
 /**
  * Created by Emanuel on 07/12/2014.
@@ -39,17 +40,7 @@ public class RibbonView extends View {
 
     @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
-        Log.d(TAG, "onSizeChanged " + w + "," + h + "," + oldw + "," + oldh );
-        /* cinta */
-        /*
-        mPath = new Path();
-        mPath.moveTo(0,0);
-        mPath.lineTo(w,0);
-        mPath.lineTo(w,h);
-        mPath.lineTo(0,h);
-        mPath.lineTo(w/8,h/2);
-        mPath.close();
-        */
+        //Log.d(TAG, "onSizeChanged " + w + "," + h + "," + oldw + "," + oldh );
         mPath = new Path();
         mPath.moveTo(w/8,0);
         mPath.lineTo(w,0);
@@ -57,13 +48,29 @@ public class RibbonView extends View {
         mPath.lineTo(w/8,h);
         mPath.lineTo(0,h/2);
         mPath.close();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            enableShadow();
+        }
     }
 
     @Override
     protected void onDraw(Canvas canvas) {
-        //canvas.drawColor(0xFFAAAAAA);
-        if (mPath!=null)
         canvas.drawPath(mPath, mPaint);
+    }
+
+    @TargetApi(21)
+    private void enableShadow() {
+        setOutlineProvider(new RibbonOutline());
+    }
+
+    @TargetApi(21)
+    private class RibbonOutline extends ViewOutlineProvider {
+
+        @Override
+        public void getOutline(View view, Outline outline) {
+            RibbonView r = (RibbonView) view;
+            outline.setConvexPath(r.mPath);
+        }
     }
 
 }

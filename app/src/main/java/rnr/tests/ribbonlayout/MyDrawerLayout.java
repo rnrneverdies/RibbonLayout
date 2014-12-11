@@ -31,6 +31,7 @@ public class MyDrawerLayout extends RelativeLayout {
     private int mMaxWidth;
     private boolean firstLayout = false;
     private int mRibbonTopPadding;
+    private boolean isOpen = false;
 
     private class DragHelperCallback extends ViewDragHelper.Callback {
 
@@ -149,16 +150,31 @@ public class MyDrawerLayout extends RelativeLayout {
 
     @Override
     public boolean onInterceptTouchEvent(MotionEvent ev) {
-        /*final int action = MotionEventCompat.getActionMasked(ev);
-        if (action == MotionEvent.ACTION_CANCEL || action == MotionEvent.ACTION_UP) {
-                mDragHelper.cancel();
-            return false;
-        }*/
-        return mDragHelper.shouldInterceptTouchEvent(ev);
+        final int action = MotionEventCompat.getActionMasked(ev);
+        final float x = ev.getX();
+        final float y = ev.getY();
+
+        boolean interceptForTap = false;
+        View view = mDragHelper.findTopChildUnder((int)x,(int)y);
+        if (isOpen && (view == mOverlayView || view == mPanelView)) {
+            interceptForTap = true;
+        }
+
+        boolean drawerFlag = mDragHelper.shouldInterceptTouchEvent(ev);
+
+        return interceptForTap || drawerFlag;
     }
 
     @Override
     public boolean onTouchEvent(MotionEvent ev) {
+        final float x = ev.getX();
+        final float y = ev.getY();
+
+        View view = mDragHelper.findTopChildUnder((int)x,(int)y);
+        if (view == mPanelView) {
+            ev.setLocation(x-mDragView.getMeasuredWidth(), y);
+            mPanelView.dispatchTouchEvent(ev);
+        }
         mDragHelper.processTouchEvent(ev);
         return true;
     }
@@ -191,9 +207,12 @@ public class MyDrawerLayout extends RelativeLayout {
 
         mMainView.layout(l,t,r,b);
 
-        // overlay visible si se mueve la barra.
-        if (mLeft < mMaxWidth - mDragView.getMeasuredWidth()) {
+        // overlay visible si se mueve la barra. 10 por seguridad
+        if (mLeft < (mMaxWidth - mDragView.getMeasuredWidth() - 10)) {
             mOverlayView.layout(l, t, r, b);
+            isOpen = true;
+        } else {
+            isOpen = false;
         }
 
         mDragView.layout(
